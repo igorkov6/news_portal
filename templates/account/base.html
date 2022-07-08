@@ -1,0 +1,33 @@
+<!-- templates/account/base.html -->
+<!-- базовая страница django-allauth -->
+
+{% extends 'flatpages/default.html' %}
+
+<!-- заголовок на вкладке -->
+{% block title %}
+    {% block head_title %}
+
+    {% endblock head_title %}
+{% endblock %}
+
+<!-- заголовок на странице -->
+{% block content_title %}
+    <h3>Для продолжения необходимо войти в систему</h3>
+    <hr>
+{% endblock content_title %}
+
+<!-- содержимое страницы -->
+{% block body %}
+    {% block content %}
+
+    {% endblock content %}
+{% endblock body %}
+
+{% block extra_body %}
+
+{% endblock extra_body %}
+
+<!-- пагинация не требуется -->
+{% block paging %}
+
+{% endblock paging %}

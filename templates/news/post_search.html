@@ -1,0 +1,29 @@
+<!-- templates/news/post_search.html -->
+<!-- поиск постов -->
+
+<!-- экстендимся от страницы просмотра -->
+{% extends 'news/post_list.html' %}
+
+<!-- подключить фильтры -->
+{% load custom_filters %}
+
+<!-- подключить теги -->
+{% load custom_tags %}
+
+<!-- заголовок на вкладке -->
+{% block title %}
+    Поиск
+{% endblock title %}
+
+<!-- форма ввода фильтров -->
+{% block form %}
+    <table align="center"><tr><td>
+        <form action="" method="get" style="margin:0 auto">
+            {{ filterset.form.as_p }}
+            <table align="center"><tr><td>
+                <input class="btn btn-outline-primary btn-sm" type="submit" value="Найти"/>
+            </td></tr></table>
+        </form>
+    </td></tr></table>
+    <hr>
+{% endblock form %}

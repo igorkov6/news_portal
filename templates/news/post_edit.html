@@ -1,0 +1,37 @@
+<!-- templates/news/post_edit.html -->
+<!-- редактор поста -->
+
+{% extends 'flatpages/default.html' %}
+
+<!-- заголовок на вкладке -->
+{% block title %}
+    Редактор
+{% endblock title %}
+
+<!-- заголовок содержимого страницы -->
+{% block content_title %}
+    <h3>
+        {% if is_news == True %}
+            Изменить новость
+        {% else %}
+            Изменить статью
+        {% endif %}
+    </h3>
+    <hr>
+{% endblock content_title %}
+
+<!-- содержимое страницы -->
+{% block content %}
+
+    <!-- форма редактора поста -->
+    <table align="center"><tr><td>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <table align="center"><tr><td>
+                <input class="btn btn-outline-primary btn-sm" type="submit" value="Сохранить"/>
+            </td></tr></table>
+        </form>
+    </td></tr></table>
+
+{% endblock content %}

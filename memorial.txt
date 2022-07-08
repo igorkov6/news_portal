@@ -1,0 +1,37 @@
+    Windows                           | Linux
+--------------------------------------+---------------------------------
+ 1. Создать папку                     |
+ 2. Создать файл .gitignore           |
+ 3. Открыть папку в PyCharm           |
+ 4. Подключить Git                    |
+ 5. python -m venv venv               | python3 -m venv venv
+ 6. venv\scripts\activate             | source venv/bin/activate
+ 7. pip install django                |
+ 8. django-admin startproject project |
+ 9. cd project                        |
+
+python manage.py runserver
+python manage.py createsuperuser
+python manage.py makemigrations
+python manage.py migrate
+python manage.py startapp appname
+
+зависимости
+pip freeze > requirements.txt
+pip install -r requirements.txt
+
+генератор рыба - текста
+https://fish-text.ru/
+
+удалить файл / папку из кеша
+git rm --cached .gitignore
+git rm -r --cached news_portal/cache_files/
+
+старт планировщика во втором окне терминала
+python manage.py runapscheduler
+
+старт запускальщика задач во втором окне терминала
+celery -A news_portal worker -l INFO
+
+старт планировщика задач в третьем окне терминала
+celery -A news_portal beat -l INFO

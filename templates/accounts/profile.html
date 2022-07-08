@@ -1,0 +1,59 @@
+<!-- templates/accounts/profile.html -->
+<!-- редактор профиля -->
+
+{% extends "flatpages/default.html" %}
+
+<!-- заголовок на вкладке -->
+{% block title %}Profile{% endblock %}
+
+<!-- заголовок на странице -->
+{% block content_title %}
+  <h3>Profile</h3>
+  <hr>
+{% endblock content_title %}
+
+<!-- содержимое страницы -->
+{% block content %}
+
+  <!-- центрирование формы -->
+  <table align="center" width="350"><tr><td>
+
+    <!-- форма редактора -->
+    <form action="" method="post">
+      {% csrf_token %}
+
+      <!-- Загружаем кэширование -->
+      {% load cache %}
+      <!-- Кэшируем на 30 секунд -->
+      {% cache 30 table %}
+        {{ form.as_p }}
+      {% endcache %}
+
+        <table align="center">
+
+          <!-- кнопка сохранения -->
+          <tr align="center"><td>
+            <input class="btn btn-outline-primary btn-sm" type="submit" name="save" value="Сохранить"/><br>
+          </td></tr>
+
+          <!-- управление подпиской -->
+          <tr align="center"><td>
+            <input class="btn btn-outline-primary btn-sm" type="submit" name="subs" value="Управление подпиской"/><br>
+          </td></tr>
+
+          <!-- управление авторством -->
+          <tr align="center"><td>
+            {% if is_not_author %}
+              <!-- если пользователь не автор -->
+              <input class="btn btn-outline-primary btn-sm" type="submit" name="auth" value="Стать автором"/>
+            {% else %}
+              <!-- если пользователь - автор -->
+              <p>Вы - автор и можете добавлять, удалять и редактировать посты.</p>
+            {% endif %}
+          </td></tr>
+        </table>
+
+    </form>
+  </td></tr></table>
+
+{% endblock %}

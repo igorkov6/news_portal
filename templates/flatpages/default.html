@@ -1,0 +1,162 @@
+<!-- подключить теги -->
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- мета данные страницы -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <!-- заголовок страницы на вкладке -->
+        <title> {% block title %} {{ flatpage.title }} {% endblock %} </title>
+
+        <!-- подключить внешние стили -->
+        {% load static %}
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+
+        <!-- иконка на вкладке -->
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
+    </head>
+
+    <body>
+        <!-- навигация на странице -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container" align="center">
+
+                <!-- навигация слева -->
+                {% block navbar_left %}
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <!-- кнопки -->
+                        <li class="nav_item">
+                            <a class="nav-link {% if section == 'news' %}active{% endif %}" href="/news/">
+                                Новости
+                            </a>
+                        </li>
+                        <li class="nav_item">
+                            <a class="nav-link {% if section == 'search' %}active{% endif %}" href="/news/search/">
+                                Поиск
+                            </a>
+                        </li>
+                        <!-- выпадающее меню -->
+                        <li class="nav-item dropdown">
+                            <!-- заголовок меню -->
+                            <a class="nav-link dropdown-toggle {% if section == 'create' %}active{% endif %}"
+                                id="navbarDropdown"
+                                href="#"
+                                role="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                    Создать
+                            </a>
+                            <!-- пункты выпадающего меню -->
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="/news/create/">
+                                        Новость
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/article/create/">
+                                        Статью
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- навигация справа -->
+                        {% block navbar_right %}
+
+                        {% endblock navbar_right %}
+                    </ul>
+                {% endblock navbar_left %}
+
+                <!-- кнопка расширителя при узком экране -->
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- информация о текущем пользователе -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                        <!-- пользователь вошел в систему -->
+                        {% if request.user.is_authenticated %}
+                            <li class="nav_item">
+                                <a class="nav-link">
+                                    Hello, {{ request.user.username }}!
+                                </a>
+                            </li>
+
+                            <li class="nav_item">
+                                <a class="nav-link {% if section == 'profile' %}active{% endif %}" href="{% url "profile_url" %}">
+                                    Profile
+                                </a>
+                            </li>
+
+                            <li class="nav_item">
+                                <a class="nav-link" href="{% url "logout_url" %}">
+                                    Logout
+                                </a>
+                            </li>
+
+                        <!-- пользователь не вошел в систему -->
+                        {% else %}
+                            <li class="nav_item">
+                                <a class="nav-link {% if request.path != '/logout/' %}active{% endif %}" href="{% url "login_url" %}">
+                                    Log-in
+                                </a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- данные страницы -->
+        <div class="container" align="center">
+
+            <!-- заголовок вверху страницы -->
+            <div align="center">
+                {% block content_title %}
+
+                {% endblock content_title %}
+            </div>
+
+            <!-- контекстная форма -->
+            {% block form %}
+
+            {% endblock form %}
+
+            <!-- основное содержимое -->
+            {% block content %}
+                {{ flatpage.content }}
+            {% endblock content %}
+
+            <!-- пагинация (постраничный вывод информации) -->
+            {% block paging %}
+
+            {% endblock paging %}
+
+        </div>
+
+        <!-- внешние сценарии -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
+
+        </script>
+        <!-- внутренние сценарии -->
+<!--        <script src="js/scripts.js">-->
+
+<!--        </script>-->
+
+    </body>
+
+</html>

@@ -1,0 +1,15 @@
+<!-- templates/news/news_create.html -->
+<!-- создать новость -->
+
+{% extends 'news/post_edit.html' %}
+
+<!-- заголовок содержимого страницы -->
+{% block content_title %}
+    <h3>
+    {% if is_news == True %}
+        Создать новость
+    {% else %}
+        Создать статью
+    {% endif %}
+    </h3><hr>
+{% endblock content_title %}

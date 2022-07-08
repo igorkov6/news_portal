@@ -1,0 +1,49 @@
+<!-- templates/accounts/edit_subscriber.html -->
+<!-- редактор подписки -->
+
+{% extends "flatpages/default.html" %}
+
+<!-- заголовок на вкладке -->
+{% block title %}Profile{% endblock %}
+
+<!-- заголовок на странице -->
+{% block content_title %}
+  <h3>Ваши подписки</h3>
+  <hr>
+{% endblock content_title %}
+
+<!-- содержимое страницы -->
+{% block content %}
+
+  <!-- центрирование формы -->
+  <table align="center" width="350"><tr><td>
+
+    <!-- форма редактора -->
+    <form action="" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <table align="center">
+
+        <!-- кнопка сохранения -->
+        <tr align="center"><td>
+          <input class="btn btn-outline-primary btn-sm"
+                 type="submit"
+                 name="save"
+                 value="Подписаться">
+          <br>
+        </td></tr>
+
+        <!-- кнопка отмены -->
+        <tr align="center"><td>
+          <input class="btn btn-outline-primary btn-sm"
+                 type="submit"
+                 name="subs"
+                 value="Отменить подписку">
+          <br>
+        </td></tr>
+
+      </table>
+    </form>
+
+{% endblock %}

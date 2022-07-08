@@ -1,0 +1,200 @@
+cd news_portal
+python manage.py shell
+
+# подключить библиотеки
+from django.contrib.auth.models import User
+from news.models import *
+import random
+
+# --------------------------------------------------------
+# 1. создать пользователей
+# --------------------------------------------------------
+
+User.objects.create_user(username='Игорь', password='igor')
+User.objects.create_user(username='Сергей', password='serg')
+User.objects.create_user(username='Злата', password='zlata')
+
+# --------------------------------------------------------
+# 2. создать авторов
+# --------------------------------------------------------
+
+aut = Author.objects.create(User.objects.get(username='Игорь'))
+aut.save()
+aut = Author.objects.create(User.objects.get(username='Сергей'))
+aut.save()
+
+# --------------------------------------------------------
+# 3. создать категории
+# --------------------------------------------------------
+
+cat = Category(name='спорт')
+cat.save()
+cat = Category(name='политика')
+cat.save()
+cat = Category(name='образование')
+cat.save()
+cat = Category(name='искусство')
+cat.save()
+
+# --------------------------------------------------------
+# 4. добавить посты
+# 5. присвоить категории постам
+# --------------------------------------------------------
+
+# новость одной категории
+aut = Author.objects.get(user=User.objects.get(username='Игорь'))
+cat = Category.objects.get(name='спорт')
+title = 'Контракт Уэлбека'
+text = 'Брайтон готов предложить новый контракт Уэлбеку'
+post = Post.objects.create(author=aut, isNews=True, title=title, text=text)
+post.category.add(cat)
+post.save()
+
+# статья одной категории
+aut = Author.objects.get(user=User.objects.get(username='Игорь'))
+cat = Category.objects.get(name='образование')
+title = 'Японская система'
+text = 'Как известно, японские дети до 5 лет считаются настоящими королями, а это предполагает вседозволенность.'
+post = Post.objects.create(author=aut, isNews=False, title=title, text=text)
+post.category.add(cat)
+post.save()
+
+# статья двух категорий
+aut = Author.objects.get(user=User.objects.get(username='Сергей'))
+cat1 = Category.objects.get(name='политика')
+cat2 = Category.objects.get(name='искусство')
+title = 'Финляндия разрешила'
+text = 'Финская таможня задержала полотна, которые возвращались с выставок в Италии и Японии, в начале недели. МИД страны разрешил вернуть их в Россию.'
+post = Post.objects.create(author=aut, isNews=False, title=title, text=text)
+post.category.add(cat1)
+post.category.add(cat2)
+post.save()
+
+# --------------------------------------------------------
+# 6. создать комментарии
+# --------------------------------------------------------
+
+# комментарии на пост 1. автор - Игорь
+post = Post.objects.get(pk=1)
+
+# комментарий пользователя Сергей.
+user = User.objects.get(username='Сергей')
+text = 'Рад за него'
+post.like()
+com = Comment.objects.create(post=post, user=user, text=text)
+com.save()
+
+# комментарий пользователя Злата.
+user = User.objects.get(username='Злата')
+text = 'Вот теперь заживет!'
+post.like()
+com = Comment.objects.create(post=post, user=user, text=text)
+com.save()
+
+# сохранить лайки поста
+post.save()
+
+#-------------------------------------
+
+# комментарии на пост 2. автор - Игорь
+post = Post.objects.get(pk=2)
+
+# комментарий пользователя Сергей.
+user = User.objects.get(username='Сергей')
+text = 'Вот почему они такие умные.'
+post.dislike()
+com = Comment.objects.create(post=post, user=user, text=text)
+com.save()
+
+# комментарий пользователя Злата.
+user = User.objects.get(username='Злата')
+text = 'Бедные дети. Что из них вырастет?'
+post.dislike()
+com = Comment.objects.create(post=post, user=user, text=text)
+com.save()
+
+# сохранить лайки поста
+post.save()
+
+#-------------------------------------
+
+# комментарии на пост 3. автор - Сергей
+post = Post.objects.get(pk=3)
+
+# комментарий пользователя Игорь.
+user = User.objects.get(username='Игорь')
+text = 'Испугались. Ну еще бы!'
+post.like()
+com = Comment.objects.create(post=post, user=user, text=text)
+com.save()
+
+# сохранить лайки поста
+post.save()
+
+# --------------------------------------------------------
+# 7. создать рейтинги комментариев
+# --------------------------------------------------------
+
+# для каждого комментария определить рейтинг случайным образом
+for com in Comment.objects.all():
+    like = random.randint(1, 4)
+    dis = 4 - like
+    for _ in range(like):
+        com.like()
+    for _ in range(dis):
+        com.dislike()
+    com.save()
+
+# --------------------------------------------------------
+# 8. обновить рейтинг авторов
+# --------------------------------------------------------
+
+# для каждого автора
+for author in Author.objects.all():
+    rating = 0
+
+    # найти все статьи автора
+    posts = Post.objects.filter(author=author)
+    # для каждой статьи получить рейтинг
+    for post in posts:
+        rating += post.rating * 3
+        # найти все комментарии к этой статье
+        coms = Comment.objects.filter(post=post)
+        # для каждого комментария получить рейтинг
+        for com in coms:
+            rating += com.rating
+
+    # найти все комментарии автора
+    coms = Comment.objects.filter(user=author.user)
+    # для каждого комментария получить рейтинг
+    for com in coms:
+        rating +- com.rating
+
+    # обновить рейтинг автора
+    author.update_rating(rating)
+    author.save()
+
+# --------------------------------------------------------
+# 9. Лучший автор
+# --------------------------------------------------------
+
+author = Author.objects.all().order_by('-rating')[0]
+f'Лучший автор: {author.user.username} рейтинг: {author.rating}'
+
+# --------------------------------------------------------
+# 10. Лучшая статья
+# --------------------------------------------------------
+
+# найти лучшую статью
+post = Post.objects.all().order_by('-rating')[0]
+f'лучший пост: {post.title}, автор: {post.author.user.username}, рейтинг: {post.rating}, дата: {post.time_in}'
+post.preview()
+
+# --------------------------------------------------------
+# 11. Комментарии к лучшей статье
+# --------------------------------------------------------
+
+# для всех комментариев к лучшей статье
+for com in Comment.objects.filter(post=post):
+    f'автор: {com.user.username}, рейтинг: {com.rating}, дата: {com.date_in}'
+    com.text + '\n'

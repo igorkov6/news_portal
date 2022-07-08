@@ -1,0 +1,27 @@
+<!-- templates/news/email_sender.html -->
+<!-- страница формирования html отчета -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>Уважаемый подписчик,<br>
+    в этом отчете представлен список новостей,<br>
+    опубликованных за последнюю неделю<br>
+    по Вашим любимым темам.</p><hr>
+    {% for pc in pc_list %}
+        <table>
+            <tr><th>Категория</th><td>{{ pc.category }}</td></tr>
+            <tr><th>Дата</th><td>{{ pc.post.time_in }}</td></tr>
+            <tr><th>Автор</th><td>{{ pc.post.author.user.username }}</td></tr>
+            <tr><th>Заголовок</th><td>{{ pc.post.title }}</td></tr>
+            <tr><th></th><td><a href="http://127.0.0.1:8000/news/{{ pc.post.id }}/view/">Читать</a></td></tr>
+        </table>
+        <hr>
+    {% endfor %}
+</body>
+</html>

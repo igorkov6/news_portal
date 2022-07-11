@@ -82,7 +82,7 @@ class PostListView(PermissionRequiredMixin, ListView):
     ordering = '-time_in'
 
     # шаблон вывода постов
-    template_name = 'news/post_list.html'
+    template_name = 'news/post_main.html'
 
     # имя, по которому обращаемся к объекту из шаблона
     context_object_name = 'post_list'
@@ -103,7 +103,7 @@ class PostListView(PermissionRequiredMixin, ListView):
 # отображение одного поста
 # ===============================================
 class PostDetailView(PermissionRequiredMixin, DetailView):
-    permission_required = ('news.view_post',)
+    permission_required = ('news.view_post', )
 
     # вид поста
     mode = 'view'

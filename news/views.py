@@ -9,7 +9,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm, ProfileForm, SubscriberForm
 from django.contrib.auth.models import Group, User
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from .filters import PostFilterForm
 from loguru import logger
@@ -17,6 +17,7 @@ from .settings import *
 import datetime
 from .utils import get_category_list
 from django.core.cache import cache
+from django.core.paginator import Paginator
 
 
 # ===============================================
@@ -69,6 +70,30 @@ class PostSearchView(PermissionRequiredMixin, ListView):
         return context
 
 
+news_page = 1
+article_page = 1
+
+
+@login_required
+def post_main_view(request):
+
+    global news_page, article_page
+
+    news_paginator = Paginator(Post.objects.filter(isNews=True).order_by('id'), 5)
+    if request.GET.get('news_page'):
+        news_page = request.GET.get('news_page')
+    news_list = news_paginator.get_page(news_page)
+
+    article_paginator = Paginator(Post.objects.filter(isNews=False).order_by('id'), 5)
+    if request.GET.get('article_page'):
+        article_page = request.GET.get('article_page')
+    article_list = article_paginator.get_page(article_page)
+
+    return render(request, 'news/post_main.html', {'section': 'main',
+                                                   'news_list': news_list,
+                                                   'article_list': article_list})
+
+
 # ===============================================
 # список постов
 # ===============================================
@@ -82,7 +107,7 @@ class PostListView(PermissionRequiredMixin, ListView):
     ordering = '-time_in'
 
     # шаблон вывода постов
-    template_name = 'news/post_main.html'
+    template_name = 'news/post_list.html'
 
     # имя, по которому обращаемся к объекту из шаблона
     context_object_name = 'post_list'
@@ -103,7 +128,7 @@ class PostListView(PermissionRequiredMixin, ListView):
 # отображение одного поста
 # ===============================================
 class PostDetailView(PermissionRequiredMixin, DetailView):
-    permission_required = ('news.view_post', )
+    permission_required = ('news.view_post',)
 
     # вид поста
     mode = 'view'
@@ -368,7 +393,6 @@ class SubscriberEditView(LoginRequiredMixin, UpdateView):
         return subs
 
     def form_valid(self, form):
-
         logger.debug(self.request.POST)
 
         # управление подпиской

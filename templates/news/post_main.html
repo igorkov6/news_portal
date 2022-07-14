@@ -1,3 +1,5 @@
+<!-- news/post_main.html -->
+<!-- главная таблица постов -->
 
 {% extends 'flatpages/default.html' %}
 {% load custom_filters %}
@@ -7,130 +9,27 @@
 
 {% block content %}
     <table>
-
         <!-- посты -->
         <tr>
             <!-- новости -->
             <td valign="top" width="30%">
-               <table class="table table-striped table-sm">
-                   <thead class="table-dark"><tr><th>Новости</th></tr></thead>
-                   <tbody>
-                   {% for post in news_list %}
-                       <tr><td>
-                           <a style="text-decoration: none" href="/news/{{ post.id }}/view/">{{ post.title }}</a>
-                       </td></tr>
-                   {% endfor %}
-                   </tbody>
-               </table>
+                {% include "news/post_table.html" with post_list=article_list mode='news' title='Новости' %}
             </td>
-
             <!-- статьи -->
             <td valign="top">
-               <table class="table table-striped table-sm">
-                   <thead class="table-dark"><tr><th>Статьи</th><th></th></tr></thead>
-                   <tbody>
-                   {% for post in article_list %}
-                       <tr>
-                           <td width="40%"><a style="text-decoration: none" href="/news/{{ post.id }}/view/">{{ post.title }}</a></td>
-                           <td>{{ post.preview }}</td>
-                       </tr>
-                   {% endfor %}
-                   </tbody>
-               </table>
+                {% include "news/post_table.html" with post_list=article_list mode='article' title='Статьи' %}
             </td>
         </tr>
-
         <!-- пагинация -->
         <tr>
-
             <!-- новости -->
             <th valign="top">
-                <!-- есть предыдущие страницы -->
-                {% if news_list.has_previous %}
-                    <!-- ссылка на первую страницу -->
-                    <a href="?news_page=1">first</a>
-                    <!-- предыдущая страница не первая -->
-                    {% if news_list.previous_page_number != 1 %}
-                        <!-- символ промежутка -->
-                        ...
-                        <!-- ссылка на предыдущую страницу -->
-                        <a href="?news_page={{ news_list.previous_page_number }}">
-                            {{ news_list.previous_page_number }}
-                        </a>
-                    {% endif %}
-                {% endif %}
-
-                <!-- текущая страница -->
-                {{ news_list.number }}
-
-                <!-- есть следующие страницы -->
-                {% if news_list.has_next %}
-                    <!-- ссылка на следующую страницу -->
-                    <a href="?news_page={{ news_list.next_page_number }}">
-
-                        <!-- следующая страница последняя -->
-                        {% if news_list.next_page_number == news_list.paginator.num_pages %}
-                            test
-                        <!-- следующая страница не последняя -->
-                        {% else %}
-                            {{ news_list.next_page_number }}
-                        {% endif %}
-
-                    </a>
-                    <!-- следующая страница не последняя -->
-                    {% if news_list.paginator.num_pages != news_list.next_page_number %}
-                        <!-- символ промежутка -->
-                        ...
-                        <!-- ссылка на последнюю страницу -->
-                        <a href="?news_page={{ news_list.paginator.num_pages }}">last</a>
-                    {% endif %}
-                {% endif %}
+                {% include "news/paginator.html" with news_list=news_list %}
             </th>
-
             <!-- статьи -->
             <th valign="top">
-                <!-- есть предыдущие страницы -->
-                {% if article_list.has_previous %}
-                    <!-- ссылка на первую страницу -->
-                    <a href="?article_page=1">first</a>
-                    <!-- предыдущая страница не первая -->
-                    {% if article_list.previous_page_number != 1 %}
-                        <!-- символ промежутка -->
-                        ...
-                        <!-- ссылка на предыдущую страницу -->
-                        <a href="?article_page={{ article_list.previous_page_number }}">
-                            {{ article_list.previous_page_number }}
-                        </a>
-                    {% endif %}
-                {% endif %}
-
-                <!-- текущая страница -->
-                {{ article_list.number }}
-
-                <!-- есть следующие страницы -->
-                {% if article_list.has_next %}
-                    <!-- ссылка на следующую страницу -->
-                    <a href="?article_page={{ article_list.next_page_number }}">
-
-                        <!-- следующая страница последняя -->
-                        {% if article_list.next_page_number == article_list.paginator.num_pages %}
-                            test
-                        <!-- следующая страница не последняя -->
-                        {% else %}
-                            {{ article_list.next_page_number }}
-                        {% endif %}
-
-                    </a>
-                    <!-- следующая страница не последняя -->
-                    {% if article_list.paginator.num_pages != article_list.next_page_number %}
-                        <!-- символ промежутка -->
-                        ...
-                        <!-- ссылка на последнюю страницу -->
-                        <a href="?article_page={{ article_list.paginator.num_pages }}">last</a>
-                    {% endif %}
-                {% endif %}
+                {% include "news/paginator.html" with news_list=article_list %}
             </th>
         </tr>
-
     </table>
 {% endblock %}

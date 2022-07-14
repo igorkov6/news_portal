@@ -82,47 +82,7 @@
 <div>
     <hr>
 
-    <!-- есть предыдущие страницы -->
-    {% if page_obj.has_previous %}
-        <!-- ссылка на первую страницу через тега -->
-        <a href="?{% url_replace_tag page=1 %}">
-            first
-        </a>
-        <!-- предыдущая страница не первая -->
-        {% if page_obj.previous_page_number != 1 %}
-            <!-- символ промежутка -->
-            ...
-            <!-- ссылка на предыдущую страницу через тега -->
-            <a href="?{% url_replace_tag page=page_obj.previous_page_number %}">
-                {{ page_obj.previous_page_number }}
-            </a>
-        {% endif %}
-    {% endif %}
+    {% include "news/paginator.html" with news_list=page_obj %}
 
-    <!-- текущая страница -->
-    {{ page_obj.number }}
-
-    <!-- есть следующие страницы -->
-    {% if page_obj.has_next %}
-        <!-- ссылка на следующую страницу через тега -->
-        <a href="?{% url_replace_tag page=page_obj.next_page_number %}">
-            <!-- следующая страница последняя -->
-            {% if page_obj.next_page_number == page_obj.paginator.num_pages %}
-                last
-                <!-- следующая страница не последняя -->
-            {% else %}
-                {{ page_obj.next_page_number }}
-            {% endif %}
-        </a>
-        <!-- следующая страница не последняя -->
-        {% if paginator.num_pages != page_obj.next_page_number %}
-            <!-- символ промежутка -->
-            ...
-            <!-- ссылка на последнюю страницу через тега -->
-            <a href="?{% url_replace_tag page=page_obj.paginator.num_pages %}">
-                last
-            </a>
-        {% endif %}
-    {% endif %}
 </div>
 {% endblock paging %}

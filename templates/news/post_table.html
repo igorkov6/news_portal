@@ -1,0 +1,32 @@
+<!-- news/post_table.html -->
+<!-- вывод таблицы постов -->
+
+<table class="table table-striped table-sm">
+
+    <!-- заголовок таблицы -->
+    <thead class="table-dark">
+        <tr>
+            <th>{{ title }}</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <!-- таблица постов -->
+    <tbody>
+        {% for post in post_list %}
+            <tr>
+                <!-- заголовок статьи -->
+                <td>
+                    <a style="text-decoration: none" href="/news/{{ post.id }}/view/">{{ post.title }}</a>
+                </td>
+                <!-- текст статьи -->
+                {% if mode == 'article' %}
+                    <td width="60%">
+                        {{ post.preview }}
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>

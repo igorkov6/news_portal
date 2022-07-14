@@ -13,7 +13,7 @@
         <tr>
             <!-- новости -->
             <td valign="top" width="30%">
-                {% include "news/post_table.html" with post_list=article_list mode='news' title='Новости' %}
+                {% include "news/post_table.html" with post_list=news_list mode='news' title='Новости' %}
             </td>
             <!-- статьи -->
             <td valign="top">
@@ -24,11 +24,11 @@
         <tr>
             <!-- новости -->
             <th valign="top">
-                {% include "news/paginator.html" with news_list=news_list %}
+                {% include "news/paginator.html" with post_list=news_list page='news_page' %}
             </th>
             <!-- статьи -->
             <th valign="top">
-                {% include "news/paginator.html" with news_list=article_list %}
+                {% include "news/paginator.html" with post_list=article_list page='article_page' %}
             </th>
         </tr>
     </table>

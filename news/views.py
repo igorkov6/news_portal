@@ -24,6 +24,7 @@ from django.core.paginator import Paginator
 # поиск постов
 # ===============================================
 class PostSearchView(PermissionRequiredMixin, ListView):
+
     permission_required = ('news.view_post',)
 
     filter_set = None
@@ -41,7 +42,7 @@ class PostSearchView(PermissionRequiredMixin, ListView):
     context_object_name = 'post_list'
 
     # количество записей на странице
-    paginate_by = 10
+    paginate_by = 5
 
     # переопределить функцию получения списка новостей
     def get_queryset(self):
@@ -70,30 +71,6 @@ class PostSearchView(PermissionRequiredMixin, ListView):
         return context
 
 
-news_page = 1
-article_page = 1
-
-
-@login_required
-def post_main_view(request):
-
-    global news_page, article_page
-
-    news_paginator = Paginator(Post.objects.filter(isNews=True).order_by('id'), 5)
-    if request.GET.get('news_page'):
-        news_page = request.GET.get('news_page')
-    news_list = news_paginator.get_page(news_page)
-
-    article_paginator = Paginator(Post.objects.filter(isNews=False).order_by('id'), 5)
-    if request.GET.get('article_page'):
-        article_page = request.GET.get('article_page')
-    article_list = article_paginator.get_page(article_page)
-
-    return render(request, 'news/post_main.html', {'section': 'main',
-                                                   'news_list': news_list,
-                                                   'article_list': article_list})
-
-
 # ===============================================
 # список постов
 # ===============================================
@@ -113,7 +90,7 @@ class PostListView(PermissionRequiredMixin, ListView):
     context_object_name = 'post_list'
 
     # количество записей на странице
-    paginate_by = 10
+    paginate_by = 5
 
     # изменить контекст формы
     def get_context_data(self, **kwargs):
@@ -442,6 +419,7 @@ def make_author_view(request):
 # ===============================================
 @login_required
 def del_subscriber_view(request):
+
     # получить пользователя
     user = request.user
 
@@ -452,3 +430,32 @@ def del_subscriber_view(request):
 
     # загрузить шаблон
     return redirect('/unsubscribe/')
+
+
+# ===============================================
+# главная таблица
+# ===============================================
+@login_required
+def post_table_view(request):
+    """ Главная таблица """
+
+    # столбец новостей
+    news_paginator = Paginator(Post.objects.filter(isNews=True).order_by('-id'), 5)
+    # номер текущей страницы в кеше
+    news_page = request.GET.get('news_page') if 'news_page' in request.GET else cache.get('news_page', 1)
+    cache.set('news_page', news_page)
+    news_list = news_paginator.get_page(news_page)
+
+    # столбец статей
+    article_paginator = Paginator(Post.objects.filter(isNews=False).order_by('-id'), 5)
+    # номер текущей страницы в кеше
+    article_page = request.GET.get('article_page') if 'article_page' in request.GET else cache.get('article_page', 1)
+    cache.set('article_page', article_page)
+    article_list = article_paginator.get_page(article_page)
+
+    # вывод главной таблицы
+    return render(request, 'news/post_main.html', {'section': 'news',
+                                                   'news_list': news_list,
+                                                   'article_list': article_list})
+
+

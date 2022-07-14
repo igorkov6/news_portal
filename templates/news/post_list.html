@@ -82,7 +82,7 @@
 <div>
     <hr>
 
-    {% include "news/paginator.html" with news_list=page_obj %}
+    {% include "news/paginator.html" with post_list=page_obj page='page' %}
 
 </div>
 {% endblock paging %}

@@ -6,7 +6,7 @@
 from django.urls import path
 from .views import PostListView, PostDetailView, PostSearchView, PostEditView
 from .views import ProfileEditView, make_author_view, news_login_view
-from .views import del_subscriber_view, SubscriberEditView, PostCreateView, post_main_view
+from .views import del_subscriber_view, SubscriberEditView, PostCreateView, post_table_view
 from django.contrib.auth.views import LogoutView
 from django.views.decorators.cache import cache_page
 
@@ -17,7 +17,7 @@ urlpatterns = [
 
     # все посты кэширование 1 минута
     # path('', cache_page(60)(PostListView.as_view()), name='post_list_url'),
-    path('', post_main_view, name='post_list_url'),
+    path('', post_table_view, name='post_list_url'),
 
     # поиск поста
     path('search/', PostSearchView.as_view()),

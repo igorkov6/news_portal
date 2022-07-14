@@ -2,42 +2,42 @@
 <!-- Пагинатор -->
 
                 <!-- есть предыдущие страницы -->
-                {% if news_list.has_previous %}
+                {% if post_list.has_previous %}
                     <!-- ссылка на первую страницу -->
-                    <a href="?news_page=1">first</a>
+                    <a href="?{{ page }}=1">first</a>
                     <!-- предыдущая страница не первая -->
-                    {% if news_list.previous_page_number != 1 %}
+                    {% if post_list.previous_page_number != 1 %}
                         <!-- символ промежутка -->
                         ...
                         <!-- ссылка на предыдущую страницу -->
-                        <a href="?news_page={{ news_list.previous_page_number }}">
-                            {{ news_list.previous_page_number }}
+                        <a href="?{{ page }}={{ post_list.previous_page_number }}">
+                            {{ post_list.previous_page_number }}
                         </a>
                     {% endif %}
                 {% endif %}
 
                 <!-- текущая страница -->
-                {{ news_list.number }}
+                {{ post_list.number }}
 
                 <!-- есть следующие страницы -->
-                {% if news_list.has_next %}
+                {% if post_list.has_next %}
                     <!-- ссылка на следующую страницу -->
-                    <a href="?news_page={{ news_list.next_page_number }}">
+                    <a href="?{{ page }}={{ post_list.next_page_number }}">
 
                         <!-- следующая страница последняя -->
-                        {% if news_list.next_page_number == news_list.paginator.num_pages %}
-                            test
+                        {% if post_list.next_page_number == post_list.paginator.num_pages %}
+                            last
                         <!-- следующая страница не последняя -->
                         {% else %}
-                            {{ news_list.next_page_number }}
+                            {{ post_list.next_page_number }}
                         {% endif %}
 
                     </a>
                     <!-- следующая страница не последняя -->
-                    {% if news_list.paginator.num_pages != news_list.next_page_number %}
+                    {% if post_list.paginator.num_pages != post_list.next_page_number %}
                         <!-- символ промежутка -->
                         ...
                         <!-- ссылка на последнюю страницу -->
-                        <a href="?news_page={{ news_list.paginator.num_pages }}">last</a>
+                        <a href="?{{ page }}={{ post_list.paginator.num_pages }}">last</a>
                     {% endif %}
                 {% endif %}

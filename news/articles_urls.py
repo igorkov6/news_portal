@@ -4,7 +4,7 @@
 # ===============================================
 
 from django.urls import path
-from .views import PostEditView, PostDetailView, PostCreateView
+from .views import PostEditView, PostDeleteView, PostCreateView
 
 urlpatterns = [
 
@@ -15,5 +15,5 @@ urlpatterns = [
     path('<int:pk>/edit/', PostEditView.as_view(isNews=False)),
 
     # удалить новость
-    path('<int:pk>/delete/', PostDetailView.as_view(mode='delete')),
+    path('<int:pk>/delete/', PostDeleteView.as_view()),
 ]

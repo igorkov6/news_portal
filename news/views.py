@@ -3,21 +3,21 @@
 # представления
 # ===============================================
 
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from .models import Post, Author, PostCategory, Subscriber, SubscriberCategory, Comment
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from .models import Post, Author, PostCategory, Subscriber, SubscriberCategory
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm, ProfileForm, SubscriberForm
 from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
+from django.core.paginator import Paginator
 from django.urls import reverse_lazy
+from .utils import get_category_list
 from .filters import PostFilterForm
+from django.core.cache import cache
 from loguru import logger
 from .settings import *
 import datetime
-from .utils import get_category_list
-from django.core.cache import cache
-from django.core.paginator import Paginator
 
 
 # ===============================================
@@ -145,55 +145,71 @@ class PostDetailView(PermissionRequiredMixin, DetailView):
         # возвратить пост
         return obj
 
-    # удаление
-    if mode == 'delete':
-        # адрес возврата после удаления
-        success_url = reverse_lazy('post_list_url')
+    # для старых постов
+    if mode == 'view':
 
-    # остальные режимы
-    else:
-        # для старых постов
-        if mode == 'view':
+        # обработка запроса post
+        def post(self, request, *args, **kwargs):
 
-            # обработка запроса post
-            def post(self, request, *args, **kwargs):
+            # получить пост
+            post_id = self.request.path.split('/')[-3]
+            post = Post.objects.get(id=post_id)
 
-                # получить пост
-                post_id = self.request.path.split('/')[-3]
-                post = Post.objects.get(id=post_id)
+            # сохранить комментарий
+            if 'comment' in self.request.POST:
+                text = self.request.POST['comment']
+                text = ' '.join(text.split()[:20])
+                if text:
+                    user = self.request.user
+                    comment = Comment.objects.create(post=post, user=user, text=text)
+                    comment.save()
 
-                # лайк
-                if 'like' in self.request.POST:
-                    post.like()
+            # лайк комментария
+            if '+' in self.request.POST.dict().values():
+                index = list(self.request.POST.dict().values()).index('+')
+                com_id = list(self.request.POST.dict().keys())[index]
+                com = Comment.objects.get(id=com_id)
+                com.like()
 
-                # дизлайк
-                if 'dislike' in self.request.POST:
-                    post.dislike()
+            # дизлайк комментария
+            if '-' in self.request.POST.dict().values():
+                index = list(self.request.POST.dict().values()).index('-')
+                com_id = list(self.request.POST.dict().keys())[index]
+                com = Comment.objects.get(id=com_id)
+                com.dislike()
 
-                # нажата кнопка Подписаться
-                if 'subscribe' in self.request.POST:
+            # лайк поста
+            if 'like' in self.request.POST:
+                post.like()
 
-                    # если пользователь не подписчик
-                    if not Subscriber.objects.filter(user=self.request.user).exists():
-                        # сделать пользователя подписчиком
-                        subs = Subscriber.objects.create(user=self.request.user)
-                        subs.save()
+            # дизлайк поста
+            if 'dislike' in self.request.POST:
+                post.dislike()
 
-                    # получить подписчика
-                    subscriber = Subscriber.objects.get(user=self.request.user)
+            # нажата кнопка Подписаться
+            if 'subscribe' in self.request.POST:
 
-                    # получить список категорий
-                    pc_list = PostCategory.objects.filter(post=post)
+                # если пользователь не подписчик
+                if not Subscriber.objects.filter(user=self.request.user).exists():
+                    # сделать пользователя подписчиком
+                    subs = Subscriber.objects.create(user=self.request.user)
+                    subs.save()
 
-                    # подписаться на категории по списку
-                    for pc in pc_list:
-                        # если такой подписки еще нет
-                        if not SubscriberCategory.objects.filter(subscriber=subscriber, category=pc.category).exists():
-                            # создать подписку
-                            sc = SubscriberCategory.objects.create(subscriber=subscriber, category=pc.category)
-                            sc.save()
+                # получить подписчика
+                subscriber = Subscriber.objects.get(user=self.request.user)
 
-                return redirect(self.request.path, {'context': 'ok'})
+                # получить список категорий
+                pc_list = PostCategory.objects.filter(post=post)
+
+                # подписаться на категории по списку
+                for pc in pc_list:
+                    # если такой подписки еще нет
+                    if not SubscriberCategory.objects.filter(subscriber=subscriber, category=pc.category).exists():
+                        # создать подписку
+                        sc = SubscriberCategory.objects.create(subscriber=subscriber, category=pc.category)
+                        sc.save()
+
+            return redirect(self.request.path, {'context': 'ok'})
 
         # изменить контекст формы
         def get_context_data(self, **kwargs):
@@ -209,6 +225,15 @@ class PostDetailView(PermissionRequiredMixin, DetailView):
 
             # вид поста
             context['post_mode'] = self.mode
+
+            # получить комментарии
+            post = Post.objects.get(id=post_id)
+            coms_paginator = Paginator(Comment.objects.filter(post=post).order_by('-id'), 5)
+            # номер текущей страницы в кеше
+            coms_page = self.request.GET.get('coms_page') if 'coms_page' in self.request.GET else cache.get('coms_page', 1)
+            cache.set('coms_page', coms_page)
+            coms_list = coms_paginator.get_page(coms_page)
+            context['coms_list'] = coms_list
 
             # возвратить контекст
             return context
@@ -293,6 +318,30 @@ class PostEditView(PermissionRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_news'] = self.isNews
+        return context
+
+
+# ===============================================
+# удаление поста
+# ===============================================
+class PostDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = ('news.delete_post',)
+
+    # модель поста
+    model = Post
+
+    # имя, по которому обращаемся к посту из шаблона
+    context_object_name = 'post'
+
+    # шаблон удаления поста
+    template_name = 'news/post_detail.html'
+
+    # адрес возврата после удаления
+    success_url = reverse_lazy('post_list_url')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post_mode'] = 'delete'
         return context
 
 

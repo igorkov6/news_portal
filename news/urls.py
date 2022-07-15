@@ -6,7 +6,7 @@
 from django.urls import path
 from .views import PostListView, PostDetailView, PostSearchView, PostEditView
 from .views import ProfileEditView, make_author_view, news_login_view
-from .views import del_subscriber_view, SubscriberEditView, PostCreateView, post_table_view
+from .views import del_subscriber_view, SubscriberEditView, PostCreateView, post_table_view, PostDeleteView
 from django.contrib.auth.views import LogoutView
 from django.views.decorators.cache import cache_page
 
@@ -32,7 +32,7 @@ urlpatterns = [
     path('<int:pk>/view/', PostDetailView.as_view(mode='view')),
 
     # удалить пост
-    path('<int:pk>/delete/', PostDetailView.as_view(mode='delete')),
+    path('<int:pk>/delete/', PostDeleteView.as_view()),
 
     # редактор поста
     path('<int:pk>/edit/', PostEditView.as_view(isNews=True)),

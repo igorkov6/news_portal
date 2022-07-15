@@ -134,10 +134,12 @@ class Comment(models.Model):
     # лайк - увеличение рейтинга комментария
     def like(self):
         self.rating += 1
+        self.save()
 
     # дизлайк - уменьшение рейтинга комментария
     def dislike(self):
         self.rating -= 1
+        self.save()
 
 
 # ===============================================

@@ -164,29 +164,31 @@ class PostDetailView(PermissionRequiredMixin, DetailView):
                     comment = Comment.objects.create(post=post, user=user, text=text)
                     comment.save()
 
-            # лайк комментария
+            # лайк
             if '+' in self.request.POST.dict().values():
                 index = list(self.request.POST.dict().values()).index('+')
-                com_id = list(self.request.POST.dict().keys())[index]
-                com = Comment.objects.get(id=com_id)
-                com.like()
+                key = list(self.request.POST.dict().keys())[index]
+                # лайк поста
+                if key == 'like':
+                    post.like()
+                # лайк комментария
+                else:
+                    com = Comment.objects.get(id=key)
+                    com.like()
 
-            # дизлайк комментария
+            # дизлайк
             if '-' in self.request.POST.dict().values():
                 index = list(self.request.POST.dict().values()).index('-')
-                com_id = list(self.request.POST.dict().keys())[index]
-                com = Comment.objects.get(id=com_id)
-                com.dislike()
+                key = list(self.request.POST.dict().keys())[index]
+                # дизлайк поста
+                if key == 'dislike':
+                    post.dislike()
+                # дизлайк комментария
+                else:
+                    com = Comment.objects.get(id=key)
+                    com.dislike()
 
-            # лайк поста
-            if 'like' in self.request.POST:
-                post.like()
-
-            # дизлайк поста
-            if 'dislike' in self.request.POST:
-                post.dislike()
-
-            # нажата кнопка Подписаться
+            # Подписаться
             if 'subscribe' in self.request.POST:
 
                 # если пользователь не подписчик

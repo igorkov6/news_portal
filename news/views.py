@@ -79,6 +79,7 @@ class PostListView(PermissionRequiredMixin, ListView):
 
     # модель, объекты которой будем выводить
     model = Post
+    queryset = Post.objects.all()
 
     # поле объекта Post, по которому выполняется сортировка
     ordering = '-time_in'
@@ -91,6 +92,21 @@ class PostListView(PermissionRequiredMixin, ListView):
 
     # количество записей на странице
     paginate_by = 5
+
+    # переопределить функцию получения списка новостей
+    def get_queryset(self):
+
+        # получить полный набор постов
+        # query_set = super().get_queryset()
+
+        # получить запрос фильтрации
+        # get_request = self.request.GET
+
+        # получить набор фильтров формы согласно запросу
+        query_set = Post.objects.filter(isNews=False)
+
+        # возвратить набор постов согласно фильтру
+        return query_set
 
     # изменить контекст формы
     def get_context_data(self, **kwargs):

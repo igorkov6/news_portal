@@ -24,11 +24,11 @@
         <tr>
             <!-- новости -->
             <th valign="top">
-                {% include "news/paginator.html" with post_list=news_list page='news_page' %}
+                {% include "news/paginator.html" with obj_list=news_list page='news_page' %}
             </th>
             <!-- статьи -->
             <th valign="top">
-                {% include "news/paginator.html" with post_list=article_list page='article_page' %}
+                {% include "news/paginator.html" with obj_list=article_list page='article_page' %}
             </th>
         </tr>
     </table>

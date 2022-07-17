@@ -51,7 +51,18 @@
         {% csrf_token %}
         <table border="1" cellpadding="10" rules="all" class="table table-striped table-sm">
             <tr><th>Автор</th>    <td>{{ post.author.user.username }}</td></tr>
-            <tr><th>Категория</th><td>{{ cats }}</td></tr>
+            <tr><th>Категория</th>
+                <td>
+                    {{ cats }}<br>
+                    <!-- управление подпиской при просмотре поста -->
+                    {% if post_mode == 'view' %}
+                        <input class="btn btn-outline-primary btn-xs"
+                               type="submit"
+                               name="subscribe"
+                               value="Подписаться на эти категории"/>
+                    {% endif %}
+                </td>
+            </tr>
             <tr><th>Название</th> <td>{{ post.title }}</td>               </tr>
             <tr><th>Текст</th>    <td>{{ post.text|censor_filter }}</td>  </tr>
             <tr><th>Дата</th>     <td>{{ post.time_in|date:'d M Y' }}</td></tr>
@@ -63,13 +74,6 @@
 
             <!-- акции -->
             <tr><th></th><td>
-                <!-- управление подпиской при просмотре поста -->
-                {% if post_mode == 'view' %}
-                    <input class="btn btn-outline-primary btn-xs"
-                           type="submit"
-                           name="subscribe"
-                           value="Подписаться на эти категории"/>
-                {% endif %}
                 <!-- удаление -->
                 {% if post_mode == 'delete' %}
                     <input class="btn btn-outline-primary btn-xs"
@@ -101,7 +105,7 @@
                                             <input type="submit" name="{{ com.id }}" value="+" />
                                         </td>
                                         <td>
-                                            {{ com.user.username }}: {{ com.text }}<br>
+                                            {{ com.text }}<br>{{ com.user.username }}
                                         </td>
                                     </tr>
                                 {% endfor %}

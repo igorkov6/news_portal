@@ -360,6 +360,10 @@ class PostDeleteView(PermissionRequiredMixin, DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['post_mode'] = 'delete'
+        # получить идентификатор поста
+        post_id = int(self.request.path.split('/')[-3])
+        # получить список тем
+        context['cats'] = get_category_list(post_id)
         return context
 
 
